@@ -4,19 +4,42 @@
 
 const BASE_URL = "https://jsonplaceholder.typicode.com";
 
-// 1. Write an async function fetchPosts() that:
-//    - fetches BASE_URL + "/posts"
-//    - parses the JSON response
-//    - returns the first 5 items
-//    - logs each item's title
+// 1 + 2. fetchPosts() with try/catch
+async function fetchPosts() {
+  try {
+    const res = await fetch(BASE_URL + "/posts");
+    const data = await res.json();
 
-// 2. Add try/catch to fetchPosts().
-//    If the fetch fails, log "Failed to load posts".
+    const firstFive = data.slice(0, 5);
 
-// 3. Write an async function getPostById(id) that:
-//    - fetches BASE_URL + "/posts/" + id
-//    - throws an Error if res.ok is false
-//    - returns the parsed JSON object
+    firstFive.forEach((post) => console.log(post.title));
+
+    return firstFive;
+  } catch (error) {
+    console.log("Failed to load posts");
+  }
+}
+
+// 3. getPostById(id)
+async function getPostById(id) {
+  const res = await fetch(BASE_URL + "/posts/" + id);
+
+  if (!res.ok) {
+    throw new Error("Post not found");
+  }
+
+  return await res.json();
+}
+
+// Call fetchPosts()
+fetchPosts();
 
 // Call getPostById(1) and log the result.
-// Call getPostById(99999) — what happens? Handle it.
+getPostById(1)
+  .then((post) => console.log(post))
+  .catch((error) => console.log(error.message));
+
+// Call getPostById(99999) and handle the error.
+getPostById(99999)
+  .then((post) => console.log(post))
+  .catch((error) => console.log(error.message));
