@@ -3,16 +3,15 @@ interface SearchBarProps {
   onChange: (value: string) => void;
 }
 
-export default function SearchBar({
-  query,
-  onChange,
-}: SearchBarProps) {
+const SearchBar = ({ query, onChange }: SearchBarProps) => {
   return (
     <input
       type="text"
-      value={query}
       placeholder="Search movies..."
-      onChange={(event) => onChange(event.target.value)}
+      value={query}
+      onChange={(e) => onChange(e.target.value)}
     />
   );
-}
+};
+
+export default SearchBar;

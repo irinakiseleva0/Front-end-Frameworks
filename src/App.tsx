@@ -36,7 +36,7 @@ const App = () => {
               <main className="main-container">
                 <h1>Movie App</h1>
 
-                <SearchBar value={search} onChange={setSearch} />
+                <SearchBar query={search} onChange={setSearch} />
 
                 <MovieList movies={filteredMovies} />
               </main>

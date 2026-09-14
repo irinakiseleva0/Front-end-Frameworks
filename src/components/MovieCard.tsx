@@ -29,7 +29,7 @@ const MovieCard = ({ movie }: MovieCardProps) => {
                 <div className="poster-overlay">
                     <div className="card-top-badges">
                         <span className="rating-badge">
-                            {movie.vote_average.toFixed(1)}
+                            {(movie.vote_average ?? 0).toFixed(1)}
                         </span>
 
                         <button
