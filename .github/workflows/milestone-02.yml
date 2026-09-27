@@ -49,10 +49,11 @@ jobs:
       - name: ESLint — lint check
         run: npm run lint
 
+        
       # ── Test suite (M1 regression + M2 tests) ──────────────────────────────
 
       - name: Run Milestone 2 tests
-        run: npm run test:run:verbose
+        run: npm run test:m2
 
       # ── Notify Google Sheet ─────────────────────────────────────────────────
 

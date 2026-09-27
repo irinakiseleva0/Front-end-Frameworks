@@ -1,7 +1,31 @@
-const HomePage = () => {
+import { useMovies } from "../hooks/useMovies";
+import { useGenres } from "../hooks/useGenres";
+import MovieList from "../components/MovieList";
+
+interface HomePageProps {
+  searchQuery?: string;
+}
+
+const apiUrl =
+  `${import.meta.env.VITE_TMDB_BASE_URL}/movie/popular?language=en-US&page=1`;
+
+const HomePage = ({ searchQuery = "" }: HomePageProps) => {
+  const { movies, loading, error } = useMovies(apiUrl);
+  const { genres } = useGenres();
+
+  const filteredMovies = movies.filter((movie) =>
+    movie.title.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
-    <main>
-      <h1>Home</h1>
+    <main className="main-container">
+      {loading && <p>Loading...</p>}
+
+      {error && <p>Something went wrong.</p>}
+
+      {!loading && !error && (
+        <MovieList movies={filteredMovies} genres={genres} />
+      )}
     </main>
   );
 };

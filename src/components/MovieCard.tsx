@@ -1,12 +1,17 @@
 import { useState } from "react";
-import type { Movie } from "../types";
+import type { Movie, Genre } from "../types";
 
 interface MovieCardProps {
     movie: Movie;
+    genres?: Genre[];
 }
 
-const MovieCard = ({ movie }: MovieCardProps) => {
+const MovieCard = ({ movie, genres = [] }: MovieCardProps) => {
     const [isFavorite, setIsFavorite] = useState(false);
+
+    const genreNames = (movie.genre_ids ?? [])
+        .map((id) => genres.find((genre) => genre.id === id)?.name)
+        .filter(Boolean);
 
     const posterUrl = movie.poster_path
         ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
@@ -45,7 +50,6 @@ const MovieCard = ({ movie }: MovieCardProps) => {
                                     : "Add to favourites"
                             }
                             onClick={() => setIsFavorite(!isFavorite)}
-
                         >
                             <svg
                                 width="16"
@@ -70,6 +74,10 @@ const MovieCard = ({ movie }: MovieCardProps) => {
                 <div className="movie-card-meta">
                     <span>{movie.release_date?.slice(0, 4)}</span>
                     <span>{movie.vote_count} votes</span>
+                </div>
+
+                <div className="movie-card-genres">
+                    {genreNames.join(", ")}
                 </div>
             </div>
         </article>

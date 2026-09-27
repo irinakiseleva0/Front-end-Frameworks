@@ -14,3 +14,7 @@ export interface Movie {
   original_language?: string;
   video?: boolean;
 }
+export interface Genre {
+  id: number;
+  name: string;
+}
