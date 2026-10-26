@@ -1,3 +1,4 @@
+import WatchlistPage from "./pages/WatchlistPage";
 import { useState } from "react";
 import {
   BrowserRouter,
@@ -29,7 +30,7 @@ const App = () => {
               element={<HomePage searchQuery={searchQuery} />}
             />
             <Route path="/about" element={<AboutPage />} />
-            <Route path="*" element={<NotFoundPage />} />
+            <Route path="/watchlist" element={<WatchlistPage />} />
           </Routes>
         </div>
       </BrowserRouter>
