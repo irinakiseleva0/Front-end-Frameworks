@@ -4,9 +4,14 @@ import MovieCard from "./MovieCard";
 interface MovieListProps {
   movies: Movie[];
   genres?: Genre[];
+  onMovieClick?: (movie: Movie) => void;
 }
 
-const MovieList = ({ movies, genres = [] }: MovieListProps) => {
+const MovieList = ({
+  movies,
+  genres = [],
+  onMovieClick,
+}: MovieListProps) => {
   if (movies.length === 0) {
     return <p>No movies found</p>;
   }
@@ -18,6 +23,7 @@ const MovieList = ({ movies, genres = [] }: MovieListProps) => {
           key={movie.id}
           movie={movie}
           genres={genres}
+          onClick={() => onMovieClick?.(movie)}
         />
       ))}
     </div>

@@ -2,12 +2,21 @@ import {
   createContext,
   useContext,
   useEffect,
-  useState,
+  useReducer,
 } from "react";
 import type { ReactNode } from "react";
 import type { Movie } from "../types";
 
 type Theme = "dark" | "light";
+
+type State = {
+  favorites: Movie[];
+  theme: Theme;
+};
+
+type Action =
+  | { type: "SET_THEME" }
+  | { type: "TOGGLE_FAVOURITE"; payload: Movie };
 
 type AppContextType = {
   favorites: Movie[];
@@ -19,95 +28,107 @@ type AppContextType = {
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
-type AppProviderProps = {
-  children: ReactNode;
-};
+const reducer = (state: State, action: Action): State => {
+  switch (action.type) {
+    case "SET_THEME":
+      return {
+        ...state,
+        theme: state.theme === "dark" ? "light" : "dark",
+      };
 
-const getInitialFavorites = (): Movie[] => {
-  const saved = localStorage.getItem("cinegrid_favorites");
-
-  if (!saved) {
-    return [];
-  }
-
-  try {
-    return JSON.parse(saved);
-  } catch {
-    return [];
-  }
-};
-
-const getInitialTheme = (): Theme => {
-  const saved = localStorage.getItem("cinegrid_theme");
-
-  if (saved === "light" || saved === "dark") {
-    return saved;
-  }
-
-  return "dark";
-};
-
-export const AppProvider = ({ children }: AppProviderProps) => {
-  const [favorites, setFavorites] =
-    useState<Movie[]>(getInitialFavorites);
-
-  const [theme, setTheme] =
-    useState<Theme>(getInitialTheme);
-
-  const toggleFavorite = (movie: Movie) => {
-    setFavorites((current) => {
-      const exists = current.some(
-        (item) => item.id === movie.id
+    case "TOGGLE_FAVOURITE": {
+      const exists = state.favorites.some(
+        (movie) => movie.id === action.payload.id
       );
 
-      if (exists) {
-        return current.filter(
-          (item) => item.id !== movie.id
-        );
-      }
+      return {
+        ...state,
+        favorites: exists
+          ? state.favorites.filter(
+              (movie) => movie.id !== action.payload.id
+            )
+          : [...state.favorites, action.payload],
+      };
+    }
 
-      return [...current, movie];
+    default:
+      return state;
+  }
+};
+
+const getInitialState = (): State => {
+  let favorites: Movie[] = [];
+
+  try {
+    const saved = localStorage.getItem("cinegrid_favorites");
+    if (saved) {
+      const parsed: unknown = JSON.parse(saved);
+      if (Array.isArray(parsed)) {
+        favorites = parsed as Movie[];
+      }
+    }
+  } catch {
+    favorites = [];
+  }
+
+  const savedTheme = localStorage.getItem("cinegrid_theme");
+
+  const theme: Theme =
+    savedTheme === "light" ? "light" : "dark";
+
+  return { favorites, theme };
+};
+
+export const AppProvider = ({
+  children,
+}: {
+  children: ReactNode;
+}) => {
+  const [state, dispatch] = useReducer(
+    reducer,
+    undefined,
+    getInitialState
+  );
+
+  const toggleFavorite = (movie: Movie) => {
+    dispatch({
+      type: "TOGGLE_FAVOURITE",
+      payload: movie,
     });
   };
 
   const isFavorite = (movieId: number) => {
-    return favorites.some(
+    return state.favorites.some(
       (movie) => movie.id === movieId
     );
   };
 
   const toggleTheme = () => {
-    setTheme((current) =>
-      current === "dark" ? "light" : "dark"
-    );
+    dispatch({ type: "SET_THEME" });
   };
 
   useEffect(() => {
     localStorage.setItem(
       "cinegrid_favorites",
-      JSON.stringify(favorites)
+      JSON.stringify(state.favorites)
     );
-  }, [favorites]);
+  }, [state.favorites]);
 
   useEffect(() => {
-    localStorage.setItem(
-      "cinegrid_theme",
-      theme
-    );
-
+    localStorage.setItem("cinegrid_theme", state.theme);
     document.documentElement.setAttribute(
       "data-theme",
-      theme
+      state.theme
     );
-  }, [theme]);
+  }, [state.theme]);
 
   return (
     <AppContext.Provider
       value={{
-        favorites,
+        favorites: state.favorites,
         toggleFavorite,
         isFavorite,
-        theme,
+        theme: state.theme,
         toggleTheme,
       }}
     >
