@@ -1,4 +1,3 @@
-import WatchlistPage from "./pages/WatchlistPage";
 import { useState } from "react";
 import {
   BrowserRouter,
@@ -10,6 +9,7 @@ import { AppProvider } from "./context/AppContext";
 import HeaderComponent from "./components/HeaderComp";
 import HomePage from "./pages/HomePage";
 import AboutPage from "./pages/AboutPage";
+import WatchlistPage from "./pages/WatchlistPage";
 import NotFoundPage from "./pages/NotFoundPage";
 
 const App = () => {
@@ -31,6 +31,7 @@ const App = () => {
             />
             <Route path="/about" element={<AboutPage />} />
             <Route path="/watchlist" element={<WatchlistPage />} />
+            <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </div>
       </BrowserRouter>
